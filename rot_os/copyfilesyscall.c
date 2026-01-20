@@ -1,0 +1,32 @@
+#include <unistd.h>
+#include <fcntl.h>
+#include <stdio.h>
+
+int main() {
+    int src, dest;
+    char buffer[1024];
+    ssize_t bytesRead;
+
+    src = open("result.txt", O_RDONLY);
+    if (src < 0) {
+        perror("Error opening result.txt");
+        return 1;
+    }
+
+    dest = open("copyresult.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    if (dest < 0) {
+        perror("Error opening copyresult.txt");
+        close(src);
+        return 1;
+    }
+
+    while ((bytesRead = read(src, buffer, sizeof(buffer))) > 0) {
+        write(dest, buffer, bytesRead);
+    }
+
+    close(src);
+    close(dest);
+
+    printf("File copied successfully using system calls.\n");
+    return 0;
+}
